@@ -1,0 +1,31 @@
+{
+  "name": "ajax.js",
+  "version": "1.0.0",
+  "description": "A lightweight AJAX library",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "ls dist | grep ajax",
+    "build": "npm run build-dev && npm run build-production",
+    "build-dev": "npx browserify src/index.js -o dist/ajax.js",
+    "build-production": "npx browserify src/index.js | uglifyjs -o dist/ajax.min.js --source-map"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SunPodder/ajax.js.git"
+  },
+  "keywords": [
+    "ajax",
+    "js",
+    "xmlhttprequest"
+  ],
+  "author": "SunPodder",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/SunPodder/ajax.js/issues"
+  },
+  "homepage": "https://github.com/SunPodder/ajax.js#readme",
+  "dependencies": {
+    "browserify": "^17.0.0",
+    "uglify-js": "^3.15.4"
+  }
+}
