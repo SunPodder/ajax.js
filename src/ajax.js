@@ -1,39 +1,88 @@
 class Ajax{
-  get(url, cb){
-    let xhttp = new XMLHttpRequest()
-    xhttp.onreadystatechange = function(){
-      if (this.readyState == 4 && this.status == 200){
-        let res = this.responseText
-        try{ res = JSON.parse(res) }catch(e){}
-        return cb(res)
-      }
+
+  _returnFunction(xhttp){
+    if (xhttp.readyState == 4 && xhttp.status == 200){
+      let res = xhttp.responseText
+      try{ res = JSON.parse(res) }catch(e){}
+      return res
+    }else if(xhttp.readyState == 4 && xhttp.status != 200 && xhttp.status != 0){
+      return ({
+        "response": this.responseText,
+        "error": `The server returned a ${this.status} error status`,
+        "code": this.status
+      })
     }
-    xhttp.open("GET", url, true)
-    xhttp.send()
+  }
+  
+  get(url, cb){
+    
+    if(cb){
+      let xhttp = new XMLHttpRequest()
+      
+      xhttp.onreadystatechange = () => {
+        let res = this._returnFunction(xhttp)
+        if(res) return cb(res)
+      }
+      
+      xhttp.open("GET", url, true)
+      xhttp.send()
+    }else{
+      return new Promise((resolve, reject) => {
+        let xhttp = new XMLHttpRequest()
+        
+        xhttp.onreadystatechange = () => {
+          let res = this._returnFunction(xhttp)
+          if (res) resolve(res)
+        }
+        
+        xhttp.open("GET", url, true)
+        xhttp.send()
+      })
+    }
   }
   
   post(url, data, cb){
-    let xhttp = new XMLHttpRequest()
     
-    xhttp.onreadystatechange = function() {
-      if (this.readyState == 4 && this.status == 200){
-        let res = this.responseText
-        try{res = JSON.parse(res)}catch(e){}
-        return cb(res)
+    //if callback available, callback
+    if(cb){
+      let xhttp = new XMLHttpRequest()
+      
+      xhttp.onreadystatechange = () => {
+        let res = this._returnFunction(xhttp)
+        if(res) return cb(res)
       }
-    }
-    
-    let form = new FormData()
-    let keys = Object.keys(data)
-    
-    keys.forEach(key => {
+      
+      let form = new FormData()
+      let keys = Object.keys(data)
+      
+      keys.forEach(key => {
       form.append(key, data[key])
-    })
-    
-    
-    xhttp.open("POST", url, true)
-    xhttp.send(form)
+      })
+      
+      xhttp.open("POST", url, true)
+      xhttp.send(form)
+    }else{
+      //else return a promise
+      return new Promise((resolve, reject) => {
+        let xhttp = new XMLHttpRequest()
+        
+        xhttp.onreadystatechange = () => {
+          let res = this._returnFunction(xhttp)
+          if (res) resolve(res)
+        }
+        
+        let form = new FormData()
+        let keys = Object.keys(data)
+        
+        keys.forEach(key => {
+        form.append(key, data[key])
+        })
+        
+        xhttp.open("POST", url, true)
+        xhttp.send(form)
+      })
+    }
   }
 }
 
-module.exports = function(){ return new Ajax() }
+module.exports = (new Ajax())

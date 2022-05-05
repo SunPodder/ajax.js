@@ -1,2 +1,2 @@
-dist/index.html
-node_modules
+node_modules/
+.github/

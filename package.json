@@ -2,12 +2,12 @@
   "name": "ajax.js",
   "version": "1.0.0",
   "description": "A lightweight AJAX library",
-  "main": "src/index.js",
+  "main": "src/ajax.js",
   "scripts": {
     "test": "ls dist | grep ajax",
     "build": "npm run build-dev && npm run build-production",
-    "build-dev": "npx browserify src/index.js -o dist/ajax.js",
-    "build-production": "npx browserify src/index.js | uglifyjs -o dist/ajax.min.js --source-map"
+    "build-dev": "npx browserify src/browser.js -o dist/ajax.js",
+    "build-production": "npx browserify src/browser.js | uglifyjs -o dist/ajax.min.js --source-map"
   },
   "repository": {
     "type": "git",
