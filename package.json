@@ -1,13 +1,14 @@
 {
   "name": "@sunpodder/ajax.js",
-  "version": "1.0.0",
-  "description": "A lightweight AJAX library",
+  "version": "1.0.1",
+  "description": "A **XMLHTTPRequest** wraper for the browser. Works with both, promises and callback function.",
   "main": "src/ajax.js",
+  "directories": {
+    "test": "test"
+  },
   "scripts": {
-    "test": "php -S 127.0.0.1:8000",
-    "build": "npm run build-dev && npm run build-production",
-    "build-dev": "npx rollup src/browser.js --file dist/ajax.js",
-    "build-production": "npx rollup src/browser.js | uglifyjs -o dist/ajax.min.js --source-map"
+    "build-full": "rollup src/browser.js --file dist/ajax.js && rollup src/browser.js | uglifyjs -o dist/ajax.min.js --source-map",
+    "build": "rollup src/browser.js --file dist/ajax.js"
   },
   "repository": {
     "type": "git",
@@ -24,9 +25,5 @@
   "bugs": {
     "url": "https://github.com/SunPodder/ajax.js/issues"
   },
-  "homepage": "https://github.com/SunPodder/ajax.js#readme",
-  "dependencies": {
-    "rollup": "^2.72.1",
-    "uglify-js": "^3.15.4"
-  }
+  "homepage": "https://github.com/SunPodder/ajax.js#readme"
 }

@@ -4,7 +4,7 @@ A **XMLHTTPRequest** wraper for the browser. Works with both, promises and callb
 
 ## Load Ajax.js with script tag
 ```html
-<script src="https://sunpodder.github.com/ajax.js/dist/ajax.min.js ></script>
+<script src="https://sunpodder.github.com/ajax.js/dist/ajax.min.js" ></script>
 ```
 
 ## Or use ES6 import
