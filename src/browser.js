@@ -1,1 +1,3 @@
-window.Ajax = require("./ajax.js")
+import Ajax from "./ajax.js"
+
+window.Ajax = Ajax

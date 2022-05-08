@@ -1,10 +1,13 @@
-(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 class Ajax{
 
-  _returnFunction(xhttp){
+  constructor(){
+    throw Error("Failed initiate Ajax. It's a static class!")
+  }
+
+  static _returnFunction(xhttp){
     if (xhttp.readyState == 4 && xhttp.status == 200){
-      let res = xhttp.responseText
-      try{ res = JSON.parse(res) }catch(e){}
+      let res = xhttp.responseText;
+      try{ res = JSON.parse(res); }catch(e){}
       return res
     }else if(xhttp.readyState == 4 && xhttp.status != 200 && xhttp.status != 0){
       return ({
@@ -15,80 +18,147 @@ class Ajax{
     }
   }
   
-  get(url, cb){
+  static _setHeaders(xhttp, data){
+    let keys = Object.keys(data);
+    keys.forEach(key => {
+      xhttp.setRequestHeader(key, data[key]);
+    });
+  }
+  
+  static _makeQueryString(obj){
+    let keys = Object.keys(obj);
+    let query = "";
+    keys.forEach(key => {
+      if(keys.indexOf(key) == (keys.length - 1)){
+        query += `${key}=${data.queries[key]}`;
+      }else {
+        query += `${key}=${data.queries[key]}&`;
+      }
+    });
+    return query
+  }
+  
+  static _makePostQuery(data){
+    //if data.type is undefined
+    //use FormData
+    //else if type is json
+    //use JSON.stringify
+    //else pass as raw string with custom headers
+    let query;
+    if(!data.type || (((data.type != "json") && data.type) && data.headers)){
+      query = new FormData();
+      let q = data.queries ? data.queries : data;
+      let keys = Object.keys(q);
+      keys.forEach(key => {
+        query.append(key, q[key]);
+      });
+    }else if(data.type == "json"){
+      query = JSON.stringify(data.queries);
+    }else {
+      query = this._makeQueryString(data.queries);
+    }
+    return query
+  }
+  
+  /*
+  * @string url
+  * @object args2
+  * @function args3 
+  */
+  static get(url){
+  
+    let cb, data;
+    
+    //if 2nd param
+    //set it to a variable according to its type
+    if(arguments.length == 2){
+      if(typeof(arguments[1]) == "function") cb = arguments[1];
+      else data = arguments[1];
+    }
+    
+    //if length is 3
+    //2nd is data object
+    //3rd is callback
+    if(arguments.length == 3){
+      data = arguments[1];
+      cb = arguments[2];
+    }
+    
+    //if data and data.queries available
+    //make and add query string
+    if((data ? data.queries : 0)) url += "?" + this._makeQueryString(data.queries);
+    url = encodeURI(url);
     
     if(cb){
-      let xhttp = new XMLHttpRequest()
+      let xhttp = new XMLHttpRequest();
       
       xhttp.onreadystatechange = () => {
-        let res = this._returnFunction(xhttp)
+        let res = this._returnFunction(xhttp);
         if(res) return cb(res)
-      }
+      };
       
-      xhttp.open("GET", url, true)
-      xhttp.send()
-    }else{
+      xhttp.open("GET", url, true);
+      if((data ? data.headers : 0)) this._setHeaders(xhttp, data.headers);
+      xhttp.send();
+      
+    }else {
       return new Promise((resolve, reject) => {
-        let xhttp = new XMLHttpRequest()
+        let xhttp = new XMLHttpRequest();
         
         xhttp.onreadystatechange = () => {
-          let res = this._returnFunction(xhttp)
-          if (res) resolve(res)
-        }
+          let res = this._returnFunction(xhttp);
+          if (res) resolve(res);
+        };
         
-        xhttp.open("GET", url, true)
-        xhttp.send()
+        xhttp.open("GET", url, true);
+        //if data and data.headers available
+        //set headers
+        if((data ? data.headers : 0)) this._setHeaders(xhttp, data.headers);
+        xhttp.send();
       })
     }
   }
   
-  post(url, data, cb){
-    
-    //if callback available, callback
+  
+  static post(url, data, cb){
+  
     if(cb){
-      let xhttp = new XMLHttpRequest()
+      let xhttp = new XMLHttpRequest();
       
       xhttp.onreadystatechange = () => {
-        let res = this._returnFunction(xhttp)
+        let res = this._returnFunction(xhttp);
         if(res) return cb(res)
-      }
+      };
       
-      let form = new FormData()
-      let keys = Object.keys(data)
+      let query = this._makePostQuery(data);
       
-      keys.forEach(key => {
-      form.append(key, data[key])
-      })
+      xhttp.open("POST", url, true);
       
-      xhttp.open("POST", url, true)
-      xhttp.send(form)
-    }else{
+      if((data ? data.headers : 0)) this._setHeaders(xhttp, data.headers);
+      if (data.type == "json") this._setHeaders(xhttp, {"Content-Type": "application/json"});
+      
+      xhttp.send(query);
+    }else {
       //else return a promise
       return new Promise((resolve, reject) => {
-        let xhttp = new XMLHttpRequest()
+        let xhttp = new XMLHttpRequest();
         
         xhttp.onreadystatechange = () => {
-          let res = this._returnFunction(xhttp)
-          if (res) resolve(res)
-        }
+          let res = this._returnFunction(xhttp);
+          if (res) resolve(res);
+        };
         
-        let form = new FormData()
-        let keys = Object.keys(data)
+        let query = this._makePostQuery(data);
+
+        xhttp.open("POST", url, true);
         
-        keys.forEach(key => {
-        form.append(key, data[key])
-        })
-        
-        xhttp.open("POST", url, true)
-        xhttp.send(form)
+        if((data ? data.headers : 0)) this._setHeaders(xhttp, data.headers);
+        if (data.type == "json") this._setHeaders(xhttp, {"Content-Type": "application/json"});
+
+        xhttp.send(query);
       })
     }
   }
 }
 
-module.exports = (new Ajax())
-
-},{}],2:[function(require,module,exports){
-window.Ajax = require("./ajax.js")
-
-},{"./ajax.js":1}]},{},[2]);
+window.Ajax = Ajax;
