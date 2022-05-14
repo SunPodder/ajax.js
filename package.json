@@ -8,7 +8,9 @@
   },
   "scripts": {
     "build-full": "rollup src/browser.js --file dist/ajax.js && rollup src/browser.js | uglifyjs -o dist/ajax.min.js --source-map",
-    "build": "rollup src/browser.js --file dist/ajax.js"
+    "build": "rollup src/browser.js --file dist/ajax.js",
+    "publish": "npm publish --access public",
+    "test": "php -S 127.0.0.1:8000"
   },
   "repository": {
     "type": "git",

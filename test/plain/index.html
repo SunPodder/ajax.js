@@ -48,6 +48,15 @@
     ).then(res => console.log(res))
     */
     
+    Ajax.get(
+      "headers.php?hi=hi",
+      {
+      }
+    )
+    .then(data => {
+      console.log(data)
+    })
+    
   </script>
 </body>
 </html>

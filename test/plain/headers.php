@@ -1,4 +1,11 @@
 <?php
+
+  echo "GET\n";
+  foreach($_GET as $key => $value){
+    echo $key.": ".$value."\n";
+  }
+  echo "\n\n";
+  
   echo "POST\n";
   
   foreach($_POST as $key => $value){

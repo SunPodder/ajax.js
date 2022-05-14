@@ -1,7 +1,7 @@
 class Ajax{
 
   constructor(){
-    throw Error("Failed initiate Ajax. It's a static class!")
+    throw Error("Failed to create instance of a static class. (Ajax)")
   }
 
   static _returnFunction(xhttp){
@@ -39,13 +39,14 @@ class Ajax{
   }
   
   static _makePostQuery(data){
-    //if data.type is undefined
-    //use FormData
-    //else if type is json
-    //use JSON.stringify
-    //else pass as raw string with custom headers
+    /*
+    * if type is json
+    * use JSON.stringify
+    * else pass as raw string
+    * default is formdata
+    */
     let query
-    if(!data.type || (((data.type != "json") && data.type) && data.headers)){
+    if(data.type != "json"){
       query = new FormData()
       let q = data.queries ? data.queries : data
       let keys = Object.keys(q)
@@ -62,27 +63,18 @@ class Ajax{
   
   /*
   * @string url
-  * @object args2
-  * @function args3 
+  * @object data (queries, headers)
+  * @function cb
   */
   static get(url){
   
     let cb, data
+    let args = [...arguments]
     
-    //if 2nd param
-    //set it to a variable according to its type
-    if(arguments.length == 2){
-      if(typeof(arguments[1]) == "function") cb = arguments[1]
-      else data = arguments[1]
-    }
-    
-    //if length is 3
-    //2nd is data object
-    //3rd is callback
-    if(arguments.length == 3){
-      data = arguments[1]
-      cb = arguments[2]
-    }
+    args.forEach(arg => {
+      if(typeof(arg) == "function") cb = arg
+      else data = arg
+    })
     
     //if data and data.queries available
     //make and add query string
@@ -111,8 +103,6 @@ class Ajax{
         }
         
         xhttp.open("GET", url, true)
-        //if data and data.headers available
-        //set headers
         if((data ? data.headers : 0)) this._setHeaders(xhttp, data.headers)
         xhttp.send()
       })
