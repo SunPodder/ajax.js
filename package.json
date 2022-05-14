@@ -1,6 +1,6 @@
 {
   "name": "@sunpodder/ajax.js",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A **XMLHTTPRequest** wraper for the browser. Works with both, promises and callback function.",
   "main": "src/ajax.js",
   "directories": {
